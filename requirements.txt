@@ -1,4 +1,0 @@
-streamlit>=1.37
-pandas
-numpy
-scikit-learn>=1.4
