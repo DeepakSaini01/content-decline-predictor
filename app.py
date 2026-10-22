@@ -70,11 +70,6 @@ def cached_oof(p: str, mtime: float):
     return mc.out_of_fold_risk(X, y, groups)
 
 
-@st.cache_data(show_spinner="Computing permutation feature importance…")
-def cached_imp(p: str, mtime: float):
-    return mc.holdout_importance(X, y, groups)
-
-
 ck = (str(path), path.stat().st_mtime)
 model = final_model(*ck)
 
@@ -86,7 +81,7 @@ c4.metric("Features used", f"{len(num_cols)} numeric")
 
 section = st.radio(
     "View",
-    ["🔎 Rank content", "🧪 What-if", "📊 How good is it?", "🧭 Drivers"],
+    ["🔎 Rank content", "🧪 What-if", "📊 How good is it?"],
     horizontal=True,
     label_visibility="collapsed",
 )
@@ -174,7 +169,7 @@ elif section.startswith("🧪"):
     st.progress(min(max(p, 0.0), 1.0))
 
 # ------------------------------------------------------------------ performance
-elif section.startswith("📊"):
+else section.startswith("📊"):
     st.subheader("Model vs. Week-4 baseline")
     results = cached_eval(*ck)
     st.markdown(
@@ -186,17 +181,3 @@ elif section.startswith("📊"):
         "**Precision@50 = 98.0%** (vs. Baseline ROC-AUC 0.580 and Precision@50 44.0%)."
     )
 
-# ------------------------------------------------------------------ drivers
-else:
-    st.subheader("Which signals matter most")
-    st.caption(
-        "Permutation importance (mean drop in ROC-AUC across 30 repeats on validation set). "
-        "Indicates predictive association, not causality."
-    )
-    top = cached_imp(*ck).head(15)
-    st.bar_chart(top.set_index("feature")["importance"], horizontal=True)
-    st.dataframe(top.round(4), hide_index=True, use_container_width=True)
-    st.warning(
-        "`impressions_90d` and `days_with_impressions` encompass the trailing 90 days "
-        "(including the last 30 days), which may carry indirect decline correlation."
-    )
