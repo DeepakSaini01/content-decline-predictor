@@ -169,8 +169,7 @@ elif section.startswith("🧪"):
     st.progress(min(max(p, 0.0), 1.0))
 
 # ------------------------------------------------------------------ performance
-else:
-    section.startswith("📊"):
+elif section.startswith("📊"):
     st.subheader("Model vs. Week-4 baseline")
     results = cached_eval(*ck)
     st.markdown(
